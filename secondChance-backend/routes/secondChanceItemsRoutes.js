@@ -89,10 +89,27 @@ router.get('/:id', async (req, res, next) => {
 router.put('/:id', async(req, res,next) => {
     try {
         //Step 5: task 1 - insert code here
+        const db = await connectToDatabase()
         //Step 5: task 2 - insert code here
+        const collection = await db.collection('secondChanceItems')
         //Step 5: task 3 - insert code here
+        const secondChanceItem = await collection.find({id: req.params.id})
+        if(secondChanceItem){
+            return res.json({message: 'Item not found'})
+        }
         //Step 5: task 4 - insert code here
+        secondChanceItem.category = req.body.category
+        secondChanceItem.condition = req.body.condition
+        secondChanceItem.age_days = req.body.age_days
+        secondChanceItem.description = req.body.description
+        secondChanceItem.age_years = Math.roud(req.body.age_days, 1)
+        secondChanceItem.updatedAt = new Date().toDateString()
+
+        await secondChanceItem.save()
+
         //Step 5: task 5 - insert code here
+        res.json({message: 'Updated successfully'})
+      
     } catch (e) {
         next(e);
     }
