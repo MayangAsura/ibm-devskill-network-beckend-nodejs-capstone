@@ -47,12 +47,19 @@ router.get('/', async (req, res, next) => {
 // Add a new item
 router.post('/', {Step 3: Task 6 insert code here}, async(req, res,next) => {
     try {
-
         //Step 3: task 1 - insert code here
+        const db = await connectToDatabase()
         //Step 3: task 2 - insert code here
+        const collection = await db.collection('secondChanceItems')
         //Step 3: task 3 - insert code here
+        const data = req.body
         //Step 3: task 4 - insert code here
+        const secondChanceItem = await collection.find().sort({id: -id}).limit(1)
+        data.id = parseInt(secondChanceItem.id) + 1
         //Step 3: task 5 - insert code here
+        data.date = new Date().toDateString()
+
+        await data.save()
         res.status(201).json(secondChanceItem.ops[0]);
     } catch (e) {
         next(e);
