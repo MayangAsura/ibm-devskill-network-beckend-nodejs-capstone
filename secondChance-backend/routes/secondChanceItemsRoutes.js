@@ -70,9 +70,16 @@ router.post('/', {Step 3: Task 6 insert code here}, async(req, res,next) => {
 router.get('/:id', async (req, res, next) => {
     try {
         //Step 4: task 1 - insert code here
+        const db = await connectToDatabase()
         //Step 4: task 2 - insert code here
+        const collection = await db.collection('secondChaceItems')
         //Step 4: task 3 - insert code here
+        const secondChanceItem = await collection.find({id: req.params.id})
         //Step 4: task 4 - insert code here
+        if(!secondChanceItem){
+            return res.json({message: "Item not found"})
+        }
+        return secondChanceItem
     } catch (e) {
         next(e);
     }
