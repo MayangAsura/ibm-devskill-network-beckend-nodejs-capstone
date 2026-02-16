@@ -40,7 +40,7 @@ router.post('/register', async (req, res) => {
         }
         const token = jwt.sign(payload, JWT_SECRET, {expiresIn: '24h'})
 
-        logger.log('User successfully registered.')
+        logger.info('User successfully registered.')
         res.status(200).json({email: email, token: token})
         
     } catch (error) {
