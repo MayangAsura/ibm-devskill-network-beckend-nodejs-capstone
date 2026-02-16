@@ -18,7 +18,7 @@ app.use(expressPino);
 app.post('/sentiment', async (req, res) => {
 
     // Task 4: extract the sentence parameter
-    const { sentence } = req.body;
+    const { sentence } = req.query;
 
 
     if (!sentence) {
