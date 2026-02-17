@@ -1,7 +1,11 @@
 const express = require('express')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-const logger = require('../logger.js')
+const dotenv = require('dotenv')
+// const logger = require('../logger.js')
+const logger = pino()
+
+dotenv.config()
 
 const connectToDatabase = require('../models/db.js')
 
