@@ -7,6 +7,51 @@ const connectToDatabase = require('../models/db.js')
 
 const router = express.Router()
 
+router.post('/login', async (req, res) => {
+    const {email, password} = req.body
+
+    try {
+
+        const db = await connectToDatabase()
+
+        const collection = await db.collection('users')
+
+        const users = await collection.findOne({email: email})
+
+        if(users){
+            const isMatch = await bcrypt.compare(password, users.password)
+            
+            if(!isMatch){
+                logger.error('Email or password wrong.')
+                return res.status(400).json({error: 'Email or Password wrong.'})
+            }
+
+            const userName = users.firstName
+            const userEmail = users.email
+    
+            const payload = {
+                user: {
+                    _id: users._id.toString()
+                }
+            }
+            const JWT_SECRET = process.env.JWT_SECRET
+            
+            const token = jwt.sign(payload, JWT_SECRET, {expiresIn: '24h'})
+    
+            res.json({token, userName, userEmail})
+
+        }else{
+            logger.error('User not found')
+            return res.status(404).json({error: 'User not found'})
+        }
+
+        
+    } catch (error) {
+        logger.error('Error when logged in' + error)
+        res.status(500).json({error: 'Error when logged in: '+ error})
+    }
+})
+
 router.post('/register', async (req, res) => {
     
     try {
