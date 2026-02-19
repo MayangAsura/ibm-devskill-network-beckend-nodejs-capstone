@@ -2,8 +2,9 @@ const express = require('express')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const dotenv = require('dotenv')
-// const logger = require('../logger.js')
-const logger = pino()
+const {check, body, validationResult } = require('express-validator')
+const logger = require('../logger.js')
+// const logger = pino()
 
 dotenv.config()
 
@@ -97,6 +98,78 @@ router.post('/register', async (req, res) => {
         res.status(500).json({error: 'Error when register: ' + error})
     }
 
+})
+
+router.put('/update', 
+    [
+        check('email').trim().escape().notEmpty().withMessage('Last name is required.').isEmail().withMessage('Please input valid email').custom( async (email) => {
+            try {
+                const collection = (await connectToDatabase()).collection('users')
+                const user = await collection.findOne({email: email})
+                if(!user){
+                    return Promise.reject('Email not found')
+                }
+                
+            } catch (error) {
+                throw error
+            }
+        }),
+        check('firstName').trim().escape().notEmpty().withMessage('First name is required.'),
+        check('lastName').trim().escape().notEmpty().withMessage('Last name is required.'),
+        check('password').trim().escape().notEmpty().withMessage('Password is required.').isStrongPassword({
+            minLength: 8,
+            minUppercase: 1,
+            minLowercase: 1,
+            minSymbols: 0
+        }).withMessage("Please ensure your password at least 8 characters long, has at least one uppercase and one lowercase letters"),
+        check('confirm_password').trim().escape().notEmpty().withMessage("Confirm passwors is required.").custom(
+            (confirmPassword, {req: request}) => confirmPassword== request.body.password
+        ).withMessage('The password and its confirm password do not match, please input correctly')
+    ],
+    async (req, res) => {
+    try {
+        const {firstName, lastName, password } = req.body
+
+        const errors = validationResult(req)
+        if(error){
+            logger.error('Error validation: ', errors.array())
+            return res.status(400).json({error: `Validation error: ${errors.array()}`})
+        }
+
+        const email = req.headers.email
+
+        if(!email){
+            return res.status(400).json({error: 'Please include email in request headers'})
+        }
+        const collection = await connectToDatabase().collection('users')
+        const users = await collection.findOne({email: email})
+        const salt = bcrypt.genSalt(10)
+        const hash_password = bcrypt.hash(password, salt)
+        users.firstName = firstName
+        users.lastName = lastName
+        users.email = email
+        users.password = hash_password
+        users.updatedAt = new Date().toDateString()
+        
+        const updatedUser = await collection.findOneAndUpdate(
+            {email},
+            {returnDocument: 'after'},
+            {$set: users},
+        )
+        const payload = {
+            user: {
+                id: updatedUser._id.toString()
+            }
+        }
+        const JWT_SECRET = process.env.JWT_SECRET
+        const token = jwt.sign(payload, JWT_SECRET, {expiresIn: '24h'})
+
+        res.status(200).json({message: 'Succesfuly updated profile', token})
+
+    } catch (error) {
+        logger.error('Error when update user.')
+        return res.status(400).json({error: 'Error when update user.'})
+    }
 })
 
 module.exports = router
