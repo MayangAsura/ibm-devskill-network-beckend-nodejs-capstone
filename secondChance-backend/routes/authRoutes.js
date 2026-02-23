@@ -82,7 +82,7 @@ router.post('/register', async (req, res) => {
             createdAt: new Date().toDateString()
         })
 
-        const JWT_SECRET = proces.env.JWT_SECRET
+        const JWT_SECRET = process.env.JWT_SECRET
         const payload = {
             user: {
                 id: data.insertedId
@@ -131,14 +131,15 @@ router.put('/update',
         const {firstName, lastName, password } = req.body
 
         const errors = validationResult(req)
-        if(error){
+        if(errors.isEmpty()){
             logger.error('Error validation: ', errors.array())
-            return res.status(400).json({error: `Validation error: ${errors.array()}`})
+            return res.status(400).json({error: `Error validation: ${errors.array()}`})
         }
 
         const email = req.headers.email
 
         if(!email){
+            logger.error('Email not found in the request headers')
             return res.status(400).json({error: 'Please include email in request headers'})
         }
         const collection = await connectToDatabase().collection('users')
