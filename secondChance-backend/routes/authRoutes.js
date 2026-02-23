@@ -41,9 +41,9 @@ router.post('/login', async (req, res) => {
             }
             const JWT_SECRET = process.env.JWT_SECRET
             
-            const token = jwt.sign(payload, JWT_SECRET, {expiresIn: '24h'})
+            const authtoken = jwt.sign(payload, JWT_SECRET, {expiresIn: '24h'})
     
-            res.json({token, userName, userEmail})
+            res.json({authtoken, userName, userEmail})
 
         }else{
             logger.error('User not found')
@@ -88,10 +88,10 @@ router.post('/register', async (req, res) => {
                 id: data.insertedId
             }
         }
-        const token = jwt.sign(payload, JWT_SECRET, {expiresIn: '24h'})
+        const authtoken = jwt.sign(payload, JWT_SECRET, {expiresIn: '24h'})
 
         logger.info('User successfully registered.')
-        res.status(200).json({email: email, token: token})
+        res.status(200).json({email, authtoken})
         
     } catch (error) {
         logger.error('Error when register: ' + error)
@@ -133,13 +133,13 @@ router.put('/update',
         const errors = validationResult(req)
         if(errors.isEmpty()){
             logger.error('Error validation: ', errors.array())
-            return res.status(400).json({error: `Error validation: ${errors.array()}`})
+            return res.status(400).json({error: `Validation error: ${errors.array()}`})
         }
 
         const email = req.headers.email
 
         if(!email){
-            logger.error('Email not found in the request headers')
+            logger.error('Error email not include in request headers')
             return res.status(400).json({error: 'Please include email in request headers'})
         }
         const collection = await connectToDatabase().collection('users')
