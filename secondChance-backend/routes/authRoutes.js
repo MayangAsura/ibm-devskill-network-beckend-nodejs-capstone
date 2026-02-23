@@ -163,9 +163,9 @@ router.put('/update',
             }
         }
         const JWT_SECRET = process.env.JWT_SECRET
-        const token = jwt.sign(payload, JWT_SECRET, {expiresIn: '24h'})
+        const authtoken = jwt.sign(payload, JWT_SECRET, {expiresIn: '24h'})
 
-        res.status(200).json({message: 'Succesfuly updated profile', token})
+        res.status(200).json({message: 'Succesfuly updated profile', authtoken})
 
     } catch (error) {
         logger.error('Error when update user.')
