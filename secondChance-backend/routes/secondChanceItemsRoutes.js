@@ -33,7 +33,7 @@ router.get('/', async (req, res, next) => {
         //Step 2: task 3 - insert code here
         const secondChanceItem = await collection.find().toArray()
         //Step 2: task 4 - insert code here
-        return secondChanceItem
+        res.json(secondChanceItem)
 
         // const collection = db.collection("secondChanceItems");
         // const secondChanceItems = await collection.find({}).toArray();
