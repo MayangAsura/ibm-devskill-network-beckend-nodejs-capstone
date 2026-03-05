@@ -55,8 +55,11 @@ router.post('/', upload.single('file'), async(req, res,next) => {
         const data = req.body
         //Step 3: task 4 - insert code here
         const secondChanceItem = await collection.find().sort({id: -1}).limit(1)
+        secondChanceItem.forEach(item => {
+            data.id = (parseInt(item.id) + 1).toString()
+        })
         console.log(secondChanceItem)
-        data.id = (parseInt(secondChanceItem.id) + 1).toString()
+        // data.id = (parseInt(secondChanceItem.id) + 1).toString()
         //Step 3: task 5 - insert code here
         data.date = new Date().toDateString()
 
@@ -74,14 +77,14 @@ router.get('/:id', async (req, res, next) => {
         //Step 4: task 1 - insert code here
         const db = await connectToDatabase()
         //Step 4: task 2 - insert code here
-        const collection = await db.collection('secondChaceItems')
+        const collection = await db.collection('secondChanceItems')
         //Step 4: task 3 - insert code here
-        const secondChanceItem = await collection.find({id: req.params.id})
+        const secondChanceItem = await collection.findOne({id: req.params.id})
         //Step 4: task 4 - insert code here
         if(!secondChanceItem){
             return res.json({message: "Item not found"})
         }
-        return secondChanceItem
+        return res.json(secondChanceItem)
     } catch (e) {
         next(e);
     }

@@ -104,7 +104,7 @@ router.put('/update',
     [
         check('email').trim().escape().notEmpty().withMessage('Last name is required.').isEmail().withMessage('Please input valid email').custom( async (email) => {
             try {
-                const collection = (await connectToDatabase()).collection('users')
+                const collection = await (await connectToDatabase()).collection('users')
                 const user = await collection.findOne({email: email})
                 if(!user){
                     return Promise.reject('Email not found')
@@ -114,7 +114,7 @@ router.put('/update',
                 throw error
             }
         }),
-        check('name').trim().escape().notEmpty().withMessage('First name is required.'),
+        check('name').trim().escape().notEmpty().withMessage('Name is required.'),
         // check('lastName').trim().escape().notEmpty().withMessage('Last name is required.'),
         // check('password').trim().escape().notEmpty().withMessage('Password is required.').isStrongPassword({
         //     minLength: 8,
@@ -128,10 +128,10 @@ router.put('/update',
     ],
     async (req, res) => {
     try {
-        const {name } = req.body
+        const { name } = req.body
 
         const errors = validationResult(req)
-        if(errors.isEmpty()){
+        if(!errors.isEmpty()){
             logger.error('Error validation: ', errors.array())
             return res.status(400).json({error: `Validation error: ${errors.array()}`})
         }
@@ -142,21 +142,20 @@ router.put('/update',
             logger.error('Error email not include in request headers')
             return res.status(400).json({error: 'Please include email in request headers'})
         }
-        const db = await connectToDatabase()
-        const collection = await db.collection('users')
+        const collection = (await connectToDatabase()).collection('users')
         const users = await collection.findOne({email: email})
         // const salt = bcrypt.genSalt(10)
         // const hash_password = bcrypt.hash(password, salt)
-        users.name = name
+        users.firstName = name
         // users.lastName = lastName
-        // users.email = email
+        users.email = email
         // users.password = hash_password
         users.updatedAt = new Date().toDateString()
         
         const updatedUser = await collection.findOneAndUpdate(
             {email},
-            {returnDocument: 'after'},
             {$set: users},
+            {returnDocument: 'after'},
         )
         const payload = {
             user: {
@@ -169,8 +168,8 @@ router.put('/update',
         res.status(200).json({message: 'Succesfuly updated profile', authtoken})
 
     } catch (error) {
-        logger.error('Error when update user.')
-        return res.status(400).json({error: 'Error when update user.'})
+        logger.error('Error when update user.' + error)
+        return res.status(400).json({error: 'Error when update user.' + error})
     }
 })
 
