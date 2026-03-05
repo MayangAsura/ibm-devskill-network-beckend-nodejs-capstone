@@ -114,21 +114,21 @@ router.put('/update',
                 throw error
             }
         }),
-        check('firstName').trim().escape().notEmpty().withMessage('First name is required.'),
-        check('lastName').trim().escape().notEmpty().withMessage('Last name is required.'),
-        check('password').trim().escape().notEmpty().withMessage('Password is required.').isStrongPassword({
-            minLength: 8,
-            minUppercase: 1,
-            minLowercase: 1,
-            minSymbols: 0
-        }).withMessage("Please ensure your password at least 8 characters long, has at least one uppercase and one lowercase letters"),
-        check('confirm_password').trim().escape().notEmpty().withMessage("Confirm passwors is required.").custom(
-            (confirmPassword, {req: request}) => confirmPassword== request.body.password
-        ).withMessage('The password and its confirm password do not match, please input correctly')
+        check('name').trim().escape().notEmpty().withMessage('First name is required.'),
+        // check('lastName').trim().escape().notEmpty().withMessage('Last name is required.'),
+        // check('password').trim().escape().notEmpty().withMessage('Password is required.').isStrongPassword({
+        //     minLength: 8,
+        //     minUppercase: 1,
+        //     minLowercase: 1,
+        //     minSymbols: 0
+        // }).withMessage("Please ensure your password at least 8 characters long, has at least one uppercase and one lowercase letters"),
+        // check('confirm_password').trim().escape().notEmpty().withMessage("Confirm passwors is required.").custom(
+        //     (confirmPassword, {req: request}) => confirmPassword== request.body.password
+        // ).withMessage('The password and its confirm password do not match, please input correctly')
     ],
     async (req, res) => {
     try {
-        const {firstName, lastName, password } = req.body
+        const {name } = req.body
 
         const errors = validationResult(req)
         if(errors.isEmpty()){
@@ -142,14 +142,15 @@ router.put('/update',
             logger.error('Error email not include in request headers')
             return res.status(400).json({error: 'Please include email in request headers'})
         }
-        const collection = await connectToDatabase().collection('users')
+        const db = await connectToDatabase()
+        const collection = await db.collection('users')
         const users = await collection.findOne({email: email})
-        const salt = bcrypt.genSalt(10)
-        const hash_password = bcrypt.hash(password, salt)
-        users.firstName = firstName
-        users.lastName = lastName
-        users.email = email
-        users.password = hash_password
+        // const salt = bcrypt.genSalt(10)
+        // const hash_password = bcrypt.hash(password, salt)
+        users.name = name
+        // users.lastName = lastName
+        // users.email = email
+        // users.password = hash_password
         users.updatedAt = new Date().toDateString()
         
         const updatedUser = await collection.findOneAndUpdate(

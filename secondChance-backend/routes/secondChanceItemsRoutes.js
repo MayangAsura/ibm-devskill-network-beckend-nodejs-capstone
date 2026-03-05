@@ -55,12 +55,17 @@ router.post('/', upload.single('file'), async(req, res,next) => {
         const data = req.body
         //Step 3: task 4 - insert code here
         const secondChanceItem = await collection.find().sort({id: -1}).limit(1)
-        data.id = parseInt(secondChanceItem.id) + 1
+        secondChanceItem.forEach(item => {
+            data.id = (parseInt(secondChanceItem.id + 1).toString())
+        })
+        console.log(secondChanceItem)
+        // data.id = parseInt(secondChanceItem.id) + 1
         //Step 3: task 5 - insert code here
         data.date = new Date().toDateString()
 
-        await data.save()
-        res.status(201).json(secondChanceItem.ops[0]);
+        await collection.insertOne(data)
+        res.status(201).json(data);
+        // res.status(201).json(secondChanceItem.ops[0]);
     } catch (e) {
         next(e);
     }
