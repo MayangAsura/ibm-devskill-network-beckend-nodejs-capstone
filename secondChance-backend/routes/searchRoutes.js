@@ -9,7 +9,7 @@ router.get('/', async (req, res, next) => {
         // {{insert code here}}
         const db = await connectToDatabase()
 
-        const collection = db.collection("gifts");
+        const collection = db.collection("secondChanceItems");
 
         // Initialize the query object
         let query = {};
@@ -35,9 +35,9 @@ router.get('/', async (req, res, next) => {
 
         // Task 4: Fetch filtered gifts using the find(query) method. Make sure to use await and store the result in the `gifts` constant
         // {{insert code here here}}
-        const gifts = await collection.find(query).toArray()
+        const secondChanceItems = await collection.find(query).toArray()
 
-        res.json(gifts);
+        res.json(secondChanceItems);
     } catch (e) {
         next(e);
     }
