@@ -29,13 +29,13 @@ app.post('/sentiment', async (req, res) => {
     // Initialize the sentiment analyzer with the Natural's PorterStemmer and "English" language
     const Analyzer = natural.SentimentAnalyzer;
     const stemmer = natural.PorterStemmer;
-    const analyzer = new Analyzer("English", stemmer, "afinn");
+    const analyzer = new Analyzer('English', stemmer, 'afinn');
 
     // Perform sentiment analysis
     try {
         const analysisResult = analyzer.getSentiment(sentence.split(' '));
 
-        let sentiment = "neutral";
+        let sentiment = 'neutral';
 
         // Task 5: set sentiment to negative or positive based on score rules
         if(analysisResult < 0) sentiment = 'negative'

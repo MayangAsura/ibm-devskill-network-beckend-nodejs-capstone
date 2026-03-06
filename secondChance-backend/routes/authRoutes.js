@@ -52,7 +52,7 @@ router.post('/login', async (req, res) => {
 
         
     } catch (error) {
-        logger.error('Error when logged in' + error)
+        logger.error('Error when logged in: ' + error)
         res.status(500).json({error: 'Error when logged in: '+ error})
     }
 })
@@ -114,7 +114,7 @@ router.put('/update',
                 throw error
             }
         }),
-        check('name').trim().escape().notEmpty().withMessage('Name is required.'),
+        check('name').trim().escape().notEmpty().withMessage('Name is required.')
         // check('lastName').trim().escape().notEmpty().withMessage('Last name is required.'),
         // check('password').trim().escape().notEmpty().withMessage('Password is required.').isStrongPassword({
         //     minLength: 8,

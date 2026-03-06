@@ -58,12 +58,13 @@ router.post('/', upload.single('file'), async(req, res,next) => {
         secondChanceItem.forEach(item => {
             data.id = (parseInt(item.id) + 1).toString()
         })
-        console.log(secondChanceItem)
+        // console.log(secondChanceItem)
         // data.id = (parseInt(secondChanceItem.id) + 1).toString()
         //Step 3: task 5 - insert code here
         data.date = new Date().toDateString()
 
         await collection.insertOne(data)
+
         res.status(201).json(data);
         // res.status(201).json(secondChanceItem.ops[0]);
     } catch (e) {
@@ -82,9 +83,10 @@ router.get('/:id', async (req, res, next) => {
         const secondChanceItem = await collection.findOne({id: req.params.id})
         //Step 4: task 4 - insert code here
         if(!secondChanceItem){
-            return res.json({message: "Item not found"})
+            return res.json({message: 'Item not found'})
         }
-        return res.json(secondChanceItem)
+        
+        res.json(secondChanceItem)
     } catch (e) {
         next(e);
     }
