@@ -14,7 +14,7 @@ const port = 3060
 connectToDatabase().then(() => {
   pinoLogger.info('Connected to DB')
 })
-.catch((e) => console.error('Failed to connect to DB', e))
+  .catch((e) => console.error('Failed to connect to DB', e))
 
 app.use(express.json())
 
