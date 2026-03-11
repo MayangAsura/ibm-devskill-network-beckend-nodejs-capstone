@@ -22,5 +22,7 @@ module.exports = {
     ecmaVersion: 'latest'
   },
   rules: {
+    indent: [2, "tab"],
+    "no-tab": 0
   }
 }
