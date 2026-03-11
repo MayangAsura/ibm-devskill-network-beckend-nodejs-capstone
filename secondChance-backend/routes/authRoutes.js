@@ -23,10 +23,10 @@ router.post('/login', async (req, res) => {
 
         const users = await collection.findOne({ email: email })
 
-        if(users){
+        if (users) {
             const isMatch = await bcrypt.compare(password, users.password)
             
-            if(!isMatch){
+            if (!isMatch) {
                 logger.error('Email or password wrong.')
                 return res.status(400).json({ error: 'Email or Password wrong.' })
             }
@@ -45,7 +45,7 @@ router.post('/login', async (req, res) => {
     
             res.json({ authtoken, userName, userEmail })
 
-        }else{
+        } else {
             logger.error('User not found')
             return res.status(404).json({ error: 'User not found' })
         }
@@ -63,10 +63,10 @@ router.post('/register', async (req, res) => {
         const db = await connectToDatabase()
         const collection = await db.collection('users')
 
-        const {email, password, firstName, lastName } = req.body
+        const { email, password, firstName, lastName } = req.body
 
         const user = await collection.findOne({ email: req.body.email })
-        if(user){
+        if (user) {
             logger.error('User already exist')
             return res.status(400).json({ error: 'User already exist.' })
         }
@@ -106,7 +106,7 @@ router.put('/update',
             try {
                 const collection = await (await connectToDatabase()).collection('users')
                 const user = await collection.findOne({ email: email })
-                if(!user){
+                if (!user) {
                     return Promise.reject('Email not found')
                 }
                 
@@ -131,14 +131,14 @@ router.put('/update',
         const { name } = req.body
 
         const errors = validationResult(req)
-        if(!errors.isEmpty()){
+        if (!errors.isEmpty()) {
             logger.error('Error validation: ', errors.array())
             return res.status(400).json({ error: `Validation error: ${errors.array()}` })
         }
 
         const email = req.headers.email
 
-        if(!email){
+        if (!email) {
             logger.error('Error email not include in request headers')
             return res.status(400).json({ error: 'Please include email in request headers' })
         }

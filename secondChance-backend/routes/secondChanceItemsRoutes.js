@@ -55,7 +55,7 @@ router.post('/', upload.single('file'), async(req, res,next) => {
         const data = req.body
         //Step 3: task 4 - insert code here
         const secondChanceItem = await collection.find().sort({ id: -1 }).limit(1)
-        
+
         secondChanceItem.forEach(item => {
             data.id = (parseInt(item.id) + 1).toString()
         })
@@ -83,7 +83,7 @@ router.get('/:id', async (req, res, next) => {
         //Step 4: task 3 - insert code here
         const secondChanceItem = await collection.findOne({ id: req.params.id })
         //Step 4: task 4 - insert code here
-        if(!secondChanceItem){
+        if (!secondChanceItem) {
             return res.json({ message: 'Item not found' })
         }
         
@@ -102,7 +102,7 @@ router.put('/:id', async(req, res,next) => {
         const collection = await db.collection('secondChanceItems')
         //Step 5: task 3 - insert code here
         const secondChanceItem = await collection.find({ id: req.params.id })
-        if(!secondChanceItem){
+        if (!secondChanceItem) {
             return res.status(400).json({ message: 'Item not found' })
         }
         //Step 5: task 4 - insert code here
@@ -120,9 +120,9 @@ router.put('/:id', async(req, res,next) => {
         )
 
         //Step 5: task 5 - insert code here
-        if(data){
+        if (data) {
             res.json({ message: 'Updated successfully' })
-        }else{
+        } else {
             res.json({ message: 'Updated failed' })
         }
       
@@ -141,7 +141,7 @@ router.delete('/:id', async(req, res,next) => {
         const collection = await db.collection('secondChanceItems')
         //Step 6: task 3 - insert code here
         const secondChanceItem = await collection.findOne({ id })
-        if(!secondChanceItem){
+        if (!secondChanceItem) {
             return res.status(400).json({ message: 'Item not found' })
         }
         //Step 6: task 4 - insert code here
