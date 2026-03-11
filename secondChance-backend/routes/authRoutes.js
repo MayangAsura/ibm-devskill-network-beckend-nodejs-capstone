@@ -2,7 +2,8 @@ const express = require('express')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const dotenv = require('dotenv')
-const { check, body, validationResult } = require('express-validator')
+const { check, validationResult } = require('express-validator')
+// body,
 const logger = require('../logger.js')
 // const logger = pino()
 
@@ -13,6 +14,7 @@ const connectToDatabase = require('../models/db.js')
 const router = express.Router()
 
 router.post('/login', async (req, res) => {
+
     const { email, password } = req.body
 
     try {
