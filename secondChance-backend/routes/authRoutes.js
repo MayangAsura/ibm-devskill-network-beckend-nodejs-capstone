@@ -21,14 +21,14 @@ router.post('/login', async (req, res) => {
 
         const collection = await db.collection('users')
 
-        const users = await collection.findOne({email: email})
+        const users = await collection.findOne({ email: email })
 
         if(users){
             const isMatch = await bcrypt.compare(password, users.password)
             
             if(!isMatch){
                 logger.error('Email or password wrong.')
-                return res.status(400).json({error: 'Email or Password wrong.'})
+                return res.status(400).json({ error: 'Email or Password wrong.' })
             }
 
             const userName = users.firstName
@@ -41,19 +41,19 @@ router.post('/login', async (req, res) => {
             }
             const JWT_SECRET = process.env.JWT_SECRET
             
-            const authtoken = jwt.sign(payload, JWT_SECRET, {expiresIn: '24h'})
+            const authtoken = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' })
     
-            res.json({authtoken, userName, userEmail})
+            res.json({ authtoken, userName, userEmail })
 
         }else{
             logger.error('User not found')
-            return res.status(404).json({error: 'User not found'})
+            return res.status(404).json({ error: 'User not found' })
         }
 
         
     } catch (error) {
         logger.error('Error when logged in: ' + error)
-        res.status(500).json({error: 'Error when logged in: '+ error})
+        res.status(500).json({ error: 'Error when logged in: '+ error })
     }
 })
 
@@ -65,10 +65,10 @@ router.post('/register', async (req, res) => {
 
         const {email, password, firstName, lastName } = req.body
 
-        const user = await collection.findOne({email: req.body.email})
+        const user = await collection.findOne({ email: req.body.email })
         if(user){
             logger.error('User already exist')
-            return res.status(400).json({error: 'User already exist.'})
+            return res.status(400).json({ error: 'User already exist.' })
         }
         
         const salt = await bcrypt.genSalt(10)
@@ -88,14 +88,14 @@ router.post('/register', async (req, res) => {
                 id: data.insertedId
             }
         }
-        const authtoken = jwt.sign(payload, JWT_SECRET, {expiresIn: '24h'})
+        const authtoken = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' })
 
         logger.info('User successfully registered.')
-        res.status(200).json({email, authtoken})
+        res.status(200).json({ email, authtoken })
         
     } catch (error) {
         logger.error('Error when register: ' + error)
-        res.status(500).json({error: 'Error when register: ' + error})
+        res.status(500).json({ error: 'Error when register: ' + error })
     }
 
 })
@@ -105,7 +105,7 @@ router.put('/update',
         check('email').trim().escape().notEmpty().withMessage('Last name is required.').isEmail().withMessage('Please input valid email').custom( async (email) => {
             try {
                 const collection = await (await connectToDatabase()).collection('users')
-                const user = await collection.findOne({email: email})
+                const user = await collection.findOne({ email: email })
                 if(!user){
                     return Promise.reject('Email not found')
                 }
@@ -133,17 +133,17 @@ router.put('/update',
         const errors = validationResult(req)
         if(!errors.isEmpty()){
             logger.error('Error validation: ', errors.array())
-            return res.status(400).json({error: `Validation error: ${errors.array()}`})
+            return res.status(400).json({ error: `Validation error: ${errors.array()}` })
         }
 
         const email = req.headers.email
 
         if(!email){
             logger.error('Error email not include in request headers')
-            return res.status(400).json({error: 'Please include email in request headers'})
+            return res.status(400).json({ error: 'Please include email in request headers' })
         }
         const collection = (await connectToDatabase()).collection('users')
-        const users = await collection.findOne({email: email})
+        const users = await collection.findOne({ email: email })
         // const salt = bcrypt.genSalt(10)
         // const hash_password = bcrypt.hash(password, salt)
         users.firstName = name
@@ -153,9 +153,9 @@ router.put('/update',
         users.updatedAt = new Date().toDateString()
         
         const updatedUser = await collection.findOneAndUpdate(
-            {email},
-            {$set: users},
-            {returnDocument: 'after'},
+            { email },
+            { $set: users },
+            { returnDocument: 'after' },
         )
         const payload = {
             user: {
@@ -163,13 +163,13 @@ router.put('/update',
             }
         }
         const JWT_SECRET = process.env.JWT_SECRET
-        const authtoken = jwt.sign(payload, JWT_SECRET, {expiresIn: '24h'})
+        const authtoken = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' })
 
-        res.status(200).json({message: 'Succesfuly updated profile', authtoken})
+        res.status(200).json({ message: 'Succesfuly updated profile', authtoken })
 
     } catch (error) {
         logger.error('Error when update user.' + error)
-        return res.status(400).json({error: 'Error when update user.' + error})
+        return res.status(400).json({ error: 'Error when update user.' + error })
     }
 })
 
