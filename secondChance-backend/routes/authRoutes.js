@@ -25,7 +25,7 @@ router.post('/login', async (req, res) => {
 
         if (users) {
             const isMatch = await bcrypt.compare(password, users.password)
-            
+
             if (!isMatch) {
                 logger.error('Email or password wrong.')
                 return res.status(400).json({ error: 'Email or Password wrong.' })
@@ -33,16 +33,16 @@ router.post('/login', async (req, res) => {
 
             const userName = users.firstName
             const userEmail = users.email
-    
+
             const payload = {
                 user: {
                     _id: users._id.toString()
                 }
             }
             const JWT_SECRET = process.env.JWT_SECRET
-            
+
             const authtoken = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' })
-    
+
             res.json({ authtoken, userName, userEmail })
 
         } else {
@@ -50,7 +50,7 @@ router.post('/login', async (req, res) => {
             return res.status(404).json({ error: 'User not found' })
         }
 
-        
+
     } catch (error) {
         logger.error('Error when logged in: ' + error)
         res.status(500).json({ error: 'Error when logged in: '+ error })
@@ -58,7 +58,7 @@ router.post('/login', async (req, res) => {
 })
 
 router.post('/register', async (req, res) => {
-    
+
     try {
         const db = await connectToDatabase()
         const collection = await db.collection('users')
@@ -70,7 +70,7 @@ router.post('/register', async (req, res) => {
             logger.error('User already exist')
             return res.status(400).json({ error: 'User already exist.' })
         }
-        
+
         const salt = await bcrypt.genSalt(10)
         const hashed_password = await bcrypt.hash(password, salt)
 
@@ -92,7 +92,7 @@ router.post('/register', async (req, res) => {
 
         logger.info('User successfully registered.')
         res.status(200).json({ email, authtoken })
-        
+
     } catch (error) {
         logger.error('Error when register: ' + error)
         res.status(500).json({ error: 'Error when register: ' + error })
@@ -100,7 +100,7 @@ router.post('/register', async (req, res) => {
 
 })
 
-router.put('/update', 
+router.put('/update',
     [
         check('email').trim().escape().notEmpty().withMessage('Last name is required.').isEmail().withMessage('Please input valid email').custom( async (email) => {
             try {
@@ -109,7 +109,7 @@ router.put('/update',
                 if (!user) {
                     return Promise.reject('Email not found')
                 }
-                
+
             } catch (error) {
                 throw error
             }
@@ -151,7 +151,7 @@ router.put('/update',
         users.email = email
         // users.password = hash_password
         users.updatedAt = new Date().toDateString()
-        
+
         const updatedUser = await collection.findOneAndUpdate(
             { email },
             { $set: users },
