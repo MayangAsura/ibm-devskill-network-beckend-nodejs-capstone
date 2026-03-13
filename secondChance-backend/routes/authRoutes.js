@@ -156,7 +156,7 @@ router.put(
         user: {
           id: updatedUser._id.toString()
         }
-      };
+      }
 
       const JWT_SECRET = process.env.JWT_SECRET
       const authtoken = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' })
@@ -168,7 +168,7 @@ router.put(
       logger.error(`Error when update user: ${error}`)
       return res.status(400).json({ error: `Error when update user: ${error}` })
     }
-  },
+  }
 )
 
 module.exports = router
