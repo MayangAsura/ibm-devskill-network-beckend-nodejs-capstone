@@ -21,8 +21,8 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 'latest'
   },
-  rules: {
-    indent: [2, "tab"],
-    "no-tab": 0
-  }
+  // rules: {
+  //   indent: [2, "tab"],
+  //   "no-tab": 0
+  // }
 }
