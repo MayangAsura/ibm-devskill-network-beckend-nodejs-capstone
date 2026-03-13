@@ -1,11 +1,11 @@
-const express = require('express');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-const dotenv = require('dotenv');
-const { check, validationResult } = require('express-validator');
-const logger = require('../logger.js');
+const express = require('express')
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
+const dotenv = require('dotenv')
+const { check, validationResult } = require('express-validator')
+const logger = require('../logger.js')
 
-dotenv.config();
+dotenv.config()
 
 const connectToDatabase = require('../models/db.js');
 
