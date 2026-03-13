@@ -16,8 +16,8 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     cb(null, file.originalname) // Use the original file name
-  },
-});
+  }
+})
 
 const upload = multer({ storage: storage })
 
@@ -42,7 +42,7 @@ router.get('/', async (req, res, next) => {
         logger.console.error('oops something went wrong', e)
         next(e)
     }
-});
+})
 
 // Add a new item
 router.post('/', upload.single('file'), async(req, res,next) => {
@@ -71,7 +71,7 @@ router.post('/', upload.single('file'), async(req, res,next) => {
     } catch (e) {
         next(e)
     }
-});
+})
 
 // Get a single secondChanceItem by ID
 router.get('/:id', async (req, res, next) => {
@@ -89,9 +89,9 @@ router.get('/:id', async (req, res, next) => {
 
         res.json(secondChanceItem)
     } catch (e) {
-        next(e);
+        next(e)
     }
-});
+})
 
 // Update and existing item
 router.put('/:id', async(req, res,next) => {
@@ -129,7 +129,7 @@ router.put('/:id', async(req, res,next) => {
     } catch (e) {
         next(e)
     }
-});
+})
 
 // Delete an existing item
 router.delete('/:id', async(req, res,next) => {
@@ -152,6 +152,6 @@ router.delete('/:id', async(req, res,next) => {
     } catch (e) {
         next(e)
     }
-});
+})
 
 module.exports = router

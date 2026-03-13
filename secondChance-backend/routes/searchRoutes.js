@@ -41,6 +41,6 @@ router.get('/', async (req, res, next) => {
     } catch (e) {
         next(e)
     }
-});
+})
 
 module.exports = router

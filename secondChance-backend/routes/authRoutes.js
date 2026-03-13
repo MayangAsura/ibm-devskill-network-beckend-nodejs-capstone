@@ -31,9 +31,9 @@ router.post('/login', async (req, res) => {
 
       const payload = {
         user: {
-          _id: users._id.toString(),
-        },
-      };
+          _id: users._id.toString()
+        }
+      }
 
       const JWT_SECRET = process.env.JWT_SECRET
       const authtoken = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' })
@@ -70,14 +70,14 @@ router.post('/register', async (req, res) => {
       password: hashedPassword,
       firstName,
       lastName,
-      createdAt: new Date().toDateString(),
+      createdAt: new Date().toDateString()
     })
 
     const JWT_SECRET = process.env.JWT_SECRET
     const payload = {
       user: {
-        id: data.insertedId,
-      },
+        id: data.insertedId
+      }
     }
     const authtoken = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' })
 
@@ -87,7 +87,7 @@ router.post('/register', async (req, res) => {
     logger.error(`Error when register: ${error}`)
     return res.status(500).json({ error: `Error when register: ${error}` })
   }
-});
+})
 
 router.put(
   '/update',
@@ -111,7 +111,7 @@ router.put(
           throw new Error(error.message)
         }
       }),
-    check('name').trim().escape().notEmpty().withMessage('Name is required.'),
+    check('name').trim().escape().notEmpty().withMessage('Name is required.')
   ],
   async (req, res) => {
     try {
@@ -149,13 +149,13 @@ router.put(
       const updatedUser = await collection.findOneAndUpdate(
         { email },
         { $set: users },
-        { returnDocument: 'after' },
+        { returnDocument: 'after' }
       )
 
       const payload = {
         user: {
-          id: updatedUser._id.toString(),
-        },
+          id: updatedUser._id.toString()
+        }
       };
 
       const JWT_SECRET = process.env.JWT_SECRET
