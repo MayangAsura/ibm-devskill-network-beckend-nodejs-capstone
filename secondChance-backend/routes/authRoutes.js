@@ -12,7 +12,6 @@ const connectToDatabase = require('../models/db.js')
 const router = express.Router()
 
 router.post('/login', async (req, res) => {
-
   const { email, password } = req.body
 
   try {
