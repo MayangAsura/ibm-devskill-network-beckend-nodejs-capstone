@@ -7,27 +7,27 @@ const logger = require('../logger.js')
 
 dotenv.config()
 
-const connectToDatabase = require('../models/db.js');
+const connectToDatabase = require('../models/db.js')
 
-const router = express.Router();
+const router = express.Router()
 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const db = await connectToDatabase();
-    const collection = db.collection('users');
-    const users = await collection.findOne({ email });
+    const db = await connectToDatabase()
+    const collection = db.collection('users')
+    const users = await collection.findOne({ email })
 
     if (users) {
-      const isMatch = await bcrypt.compare(password, users.password);
+      const isMatch = await bcrypt.compare(password, users.password)
 
       if (!isMatch) {
-        logger.error('Email or password wrong.');
-        return res.status(400).json({ error: 'Email or Password wrong.' });
+        logger.error('Email or password wrong.')
+        return res.status(400).json({ error: 'Email or Password wrong.' })
       }
 
-      const { firstName: userName, email: userEmail } = users;
+      const { firstName: userName, email: userEmail } = users
 
       const payload = {
         user: {
@@ -35,35 +35,35 @@ router.post('/login', async (req, res) => {
         },
       };
 
-      const JWT_SECRET = process.env.JWT_SECRET;
-      const authtoken = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
+      const JWT_SECRET = process.env.JWT_SECRET
+      const authtoken = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' })
 
-      return res.json({ authtoken, userName, userEmail });
+      return res.json({ authtoken, userName, userEmail })
     }
 
-    logger.error('User not found');
-    return res.status(404).json({ error: 'User not found' });
+    logger.error('User not found')
+    return res.status(404).json({ error: 'User not found' })
   } catch (error) {
-    logger.error(`Error when logged in: ${error}`);
-    return res.status(500).json({ error: `Error when logged in: ${error}` });
+    logger.error(`Error when logged in: ${error}`)
+    return res.status(500).json({ error: `Error when logged in: ${error}` })
   }
-});
+})
 
 router.post('/register', async (req, res) => {
   try {
-    const db = await connectToDatabase();
-    const collection = db.collection('users');
+    const db = await connectToDatabase()
+    const collection = db.collection('users')
 
-    const { email, password, firstName, lastName } = req.body;
+    const { email, password, firstName, lastName } = req.body
 
-    const user = await collection.findOne({ email });
+    const user = await collection.findOne({ email })
     if (user) {
-      logger.error('User already exist');
-      return res.status(400).json({ error: 'User already exist.' });
+      logger.error('User already exist')
+      return res.status(400).json({ error: 'User already exist.' })
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(password, salt)
 
     const data = await collection.insertOne({
       email,
@@ -71,21 +71,21 @@ router.post('/register', async (req, res) => {
       firstName,
       lastName,
       createdAt: new Date().toDateString(),
-    });
+    })
 
-    const JWT_SECRET = process.env.JWT_SECRET;
+    const JWT_SECRET = process.env.JWT_SECRET
     const payload = {
       user: {
         id: data.insertedId,
       },
-    };
-    const authtoken = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
+    }
+    const authtoken = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' })
 
-    logger.info('User successfully registered.');
-    return res.status(200).json({ email, authtoken });
+    logger.info('User successfully registered.')
+    return res.status(200).json({ email, authtoken })
   } catch (error) {
-    logger.error(`Error when register: ${error}`);
-    return res.status(500).json({ error: `Error when register: ${error}` });
+    logger.error(`Error when register: ${error}`)
+    return res.status(500).json({ error: `Error when register: ${error}` })
   }
 });
 
@@ -101,56 +101,56 @@ router.put(
       .withMessage('Please input valid email')
       .custom(async (email) => {
         try {
-          const collection = (await connectToDatabase()).collection('users');
-          const user = await collection.findOne({ email });
+          const collection = (await connectToDatabase()).collection('users')
+          const user = await collection.findOne({ email })
           if (!user) {
-            throw new Error('Email not found');
+            throw new Error('Email not found')
           }
-          return true;
+          return true
         } catch (error) {
-          throw new Error(error.message);
+          throw new Error(error.message)
         }
       }),
     check('name').trim().escape().notEmpty().withMessage('Name is required.'),
   ],
   async (req, res) => {
     try {
-      const { name } = req.body;
+      const { name } = req.body
 
-      const errors = validationResult(req);
+      const errors = validationResult(req)
       if (!errors.isEmpty()) {
-        logger.error('Error validation: ', errors.array());
+        logger.error('Error validation: ', errors.array())
         return res
           .status(400)
-          .json({ error: `Validation error: ${errors.array()}` });
+          .json({ error: `Validation error: ${errors.array()}` })
       }
 
-      const email = req.headers.email;
+      const email = req.headers.email
 
       if (!email) {
-        logger.error('Error email not include in request headers');
+        logger.error('Error email not include in request headers')
         return res
           .status(400)
-          .json({ error: 'Please include email in request headers' });
+          .json({ error: 'Please include email in request headers' })
       }
 
-      const db = await connectToDatabase();
-      const collection = db.collection('users');
-      const users = await collection.findOne({ email });
+      const db = await connectToDatabase()
+      const collection = db.collection('users')
+      const users = await collection.findOne({ email })
 
       if (!users) {
-        logger.error('User not found');
-        return res.status(404).json({ error: 'User not found' });
+        logger.error('User not found')
+        return res.status(404).json({ error: 'User not found' })
       }
 
-      users.firstName = name;
-      users.updatedAt = new Date().toDateString();
+      users.firstName = name
+      users.updatedAt = new Date().toDateString()
 
       const updatedUser = await collection.findOneAndUpdate(
         { email },
         { $set: users },
         { returnDocument: 'after' },
-      );
+      )
 
       const payload = {
         user: {
@@ -158,20 +158,20 @@ router.put(
         },
       };
 
-      const JWT_SECRET = process.env.JWT_SECRET;
-      const authtoken = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
+      const JWT_SECRET = process.env.JWT_SECRET
+      const authtoken = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' })
 
       return res
         .status(200)
-        .json({ message: 'Successfully updated profile', authtoken });
+        .json({ message: 'Successfully updated profile', authtoken })
     } catch (error) {
-      logger.error(`Error when update user: ${error}`);
-      return res.status(400).json({ error: `Error when update user: ${error}` });
+      logger.error(`Error when update user: ${error}`)
+      return res.status(400).json({ error: `Error when update user: ${error}` })
     }
   },
-);
+)
 
-module.exports = router;
+module.exports = router
 // const express = require("express");
 // const jwt = require("jsonwebtoken");
 // const bcrypt = require("bcrypt");
