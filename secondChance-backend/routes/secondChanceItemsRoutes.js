@@ -1,30 +1,30 @@
-const express = require('express');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-const router = express.Router();
-const connectToDatabase = require('../models/db');
-const logger = require('../logger');
+const express = require('express')
+const multer = require('multer')
+const path = require('path')
+const fs = require('fs')
+const router = express.Router()
+const connectToDatabase = require('../models/db')
+const logger = require('../logger')
 
 // Define the upload directory path
-const directoryPath = 'public/images';
+const directoryPath = 'public/images'
 
 // Set up storage for uploaded files
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, directoryPath); // Specify the upload directory
+    cb(null, directoryPath) // Specify the upload directory
   },
   filename: function (req, file, cb) {
-    cb(null, file.originalname); // Use the original file name
+    cb(null, file.originalname) // Use the original file name
   },
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ storage: storage })
 
 
 // Get all secondChanceItems
 router.get('/', async (req, res, next) => {
-    logger.info('/ called');
+    logger.info('/ called')
     try {
         //Step 2: task 1 - insert code here
         const db = await connectToDatabase()
@@ -40,7 +40,7 @@ router.get('/', async (req, res, next) => {
         // res.json(secondChanceItems);
     } catch (e) {
         logger.console.error('oops something went wrong', e)
-        next(e);
+        next(e)
     }
 });
 
@@ -66,10 +66,10 @@ router.post('/', upload.single('file'), async(req, res,next) => {
 
         await collection.insertOne(data)
 
-        res.status(201).json(data);
+        res.status(201).json(data)
         // res.status(201).json(secondChanceItem.ops[0]);
     } catch (e) {
-        next(e);
+        next(e)
     }
 });
 
@@ -86,7 +86,7 @@ router.get('/:id', async (req, res, next) => {
         if (!secondChanceItem) {
             return res.json({ message: 'Item not found' })
         }
-        
+
         res.json(secondChanceItem)
     } catch (e) {
         next(e);
@@ -125,9 +125,9 @@ router.put('/:id', async(req, res,next) => {
         } else {
             res.json({ message: 'Updated failed' })
         }
-      
+
     } catch (e) {
-        next(e);
+        next(e)
     }
 });
 
@@ -135,7 +135,7 @@ router.put('/:id', async(req, res,next) => {
 router.delete('/:id', async(req, res,next) => {
     try {
         const id = req.params.id
-        //Step 6: task 1 - insert code 
+        //Step 6: task 1 - insert code
         const db = await connectToDatabase()
         //Step 6: task 2 - insert code here
         const collection = await db.collection('secondChanceItems')
@@ -148,10 +148,10 @@ router.delete('/:id', async(req, res,next) => {
         await collection.deleteOne({ id })
 
         res.json({ message: 'Item deleted successfully' })
-      
+
     } catch (e) {
-        next(e);
+        next(e)
     }
 });
 
-module.exports = router;
+module.exports = router
