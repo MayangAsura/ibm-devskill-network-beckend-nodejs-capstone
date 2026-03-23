@@ -97,7 +97,7 @@ router.put('/:id', async (req, res, next) => {
   try {
     // Step 5: task 1 - insert code here
     const db = await connectToDatabase()
-    //Step 5: task 2 - insert code here
+    // Step 5: task 2 - insert code here
     const collection = await db.collection('secondChanceItems')
     // Step 5: task 3 - insert code here
     const secondChanceItem = await collection.find({ id: req.params.id })
