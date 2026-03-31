@@ -55,7 +55,7 @@ router.post('/', upload.single('file'), async (req, res, next) => {
     // Step 3: task 4 - insert code here
     const secondChanceItem = await collection.find().sort({ id: -1 }).limit(1)
 
-    secondChanceItem.forEach(item => {
+    await secondChanceItem.forEach(item => {
       data.id = (parseInt(item.id) + 1).toString()
     })
     // console.log(secondChanceItem)
